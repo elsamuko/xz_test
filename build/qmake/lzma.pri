@@ -3,7 +3,11 @@ LZMA_DIR=$${MAIN_DIR}/libs/lzma/bin/$${PLATFORM}/$${COMPILE_MODE}
 INCLUDEPATH += $${MAIN_DIR}/libs/lzma/include
 
 LIBS += -L$${LZMA_DIR}
-LIBS += $${LZMA_DIR}/liblzma.a
+unix: LIBS += $${LZMA_DIR}/liblzma.a
+win32 {
+    DEFINES += LZMA_API_STATIC
+    LIBS += $${LZMA_DIR}/liblzma.lib
+}
 
 HEADERS += $${SRC_DIR}/log.hpp
 
