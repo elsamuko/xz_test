@@ -15,17 +15,8 @@ PRI_DIR  = $${MAIN_DIR}/build/qmake
 SRC_DIR  = $${MAIN_DIR}/src
 
 include( $${PRI_DIR}/setup.pri )
+include( $${PRI_DIR}/lzma.pri )
 macx:  include( $${PRI_DIR}/mac.pri )
 linux: include( $${PRI_DIR}/linux.pri )
-
-LIBS += -llzma
-
-HEADERS += $${SRC_DIR}/log.hpp
-
-SOURCES += $${SRC_DIR}/xz/encode.cpp
-HEADERS += $${SRC_DIR}/xz/encode.hpp
-
-SOURCES += $${SRC_DIR}/xz/decode.cpp
-HEADERS += $${SRC_DIR}/xz/decode.hpp
 
 SOURCES += roundtrip_test.cpp

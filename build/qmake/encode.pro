@@ -10,12 +10,8 @@ SRC_DIR  = $${MAIN_DIR}/src
 
 include( $${PRI_DIR}/setup.pri )
 DESTDIR  = $${MAIN_DIR}/bin/$${COMPILE_MODE}
+include( $${PRI_DIR}/lzma.pri )
 linux: include( $${PRI_DIR}/linux.pri )
-
-LIBS += -llzma
+macx:  include( $${PRI_DIR}/mac.pri )
 
 SOURCES += $${SRC_DIR}/main_encode.cpp
-SOURCES += $${SRC_DIR}/xz/encode.cpp
-
-HEADERS += $${SRC_DIR}/xz/encode.hpp
-HEADERS += $${SRC_DIR}/log.hpp
