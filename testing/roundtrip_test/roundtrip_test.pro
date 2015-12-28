@@ -18,5 +18,6 @@ include( $${PRI_DIR}/setup.pri )
 include( $${PRI_DIR}/lzma.pri )
 macx:  include( $${PRI_DIR}/mac.pri )
 linux: include( $${PRI_DIR}/linux.pri )
+win32: include( $${PRI_DIR}/win.pri )
 
 SOURCES += roundtrip_test.cpp

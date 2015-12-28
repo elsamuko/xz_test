@@ -23,29 +23,42 @@ Roundtrip_test::Roundtrip_test() {
 
 void Roundtrip_test::testString() {
 
-    std::string original = "PgHDt7UVKDqnZm3zXARL5zOKtB3nmWPZgRYJDzuuDY61W5YixD";
-    std::string compressed;
-    std::string deflated;
+    std::string longString = "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789"
+                             "0123456789";
 
-    // compress
-    {
-        std::stringstream in( original );
-        std::stringstream out;
-        xz::compress( in, out );
-        compressed = out.str();
+    for( int i = 0; i < 100; ++i ) {
+        std::string original = longString.substr( 0, i );
+        std::string compressed;
+        std::string deflated;
+
+        // compress
+        {
+            std::stringstream in( original );
+            std::stringstream out;
+            xz::compress( in, out );
+            compressed = out.str();
+        }
+
+        // deflate
+        {
+            std::stringstream in( compressed );
+            std::stringstream out;
+            xz::deflate( in, out );
+            deflated = out.str();
+        }
+
+        QVERIFY2( !compressed.empty(), std::to_string( i ).c_str() );
+        QVERIFY2( !deflated.empty(), std::to_string( i ).c_str() );
+        QVERIFY2( deflated == original, std::to_string( i ).c_str() );
     }
-
-    // deflate
-    {
-        std::stringstream in( compressed );
-        std::stringstream out;
-        xz::deflate( in, out );
-        deflated = out.str();
-    }
-
-    QVERIFY( !compressed.empty() );
-    QVERIFY( !deflated.empty() );
-    QVERIFY( deflated == original );
 }
 
 namespace utils {
