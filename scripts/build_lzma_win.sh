@@ -52,24 +52,33 @@ function create_helper {
 		echo -ne '\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 	# VS 2013
 	elif [ -n "$VS120COMNTOOLS" ]; then
 		echo -ne '@echo off\r\n\r\ncall "%VS120COMNTOOLS%..\\..\\VC\\bin\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
 		echo -ne '\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 	# VS 2012
 	elif [ -n "$VS110COMNTOOLS" ]; then
 		echo -ne '@echo off\r\n\r\ncall "%VS110COMNTOOLS%..\\..\\VC\\bin\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
 		echo -ne '\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
 	fi
     chmod +x "$BUILD_HELPER"
 }
 
 function doBuild {
 	create_helper
+	
+	# patched version with DebugMT target
+	cp "$SCRIPT_DIR/liblzma.vcxproj" "$BUILD_DIR" 
 
     # debug and release
     cd "$BUILD_DIR"
@@ -80,8 +89,10 @@ function doCopy {
     mkdir -p "$TARGET_DIR/bin/$OS/debug"
     mkdir -p "$TARGET_DIR/bin/$OS/release"
     mkdir -p "$TARGET_DIR/include"
-    cp -r "$BUILD_DIR/debug/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/debug"
-    cp -r "$BUILD_DIR/release/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/release"
+    cp -r "$BUILD_DIR/debug/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/debug/liblzma_MD.lib"
+    cp -r "$BUILD_DIR/release/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/release/liblzma_MD.lib"
+    cp -r "$BUILD_DIR/debugMT/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/debug/liblzma_MT.lib"
+    cp -r "$BUILD_DIR/releaseMT/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/release/liblzma_MT.lib"
     cp -r "$BUILD_DIR/../src/liblzma/api"/* "$TARGET_DIR/include"
 }
 
