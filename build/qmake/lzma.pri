@@ -6,7 +6,8 @@ LIBS += -L$${LZMA_DIR}
 unix: LIBS += $${LZMA_DIR}/liblzma.a
 win32 {
     DEFINES += LZMA_API_STATIC
-    LIBS += $${LZMA_DIR}/liblzma.lib
+    static: LIBS += $${LZMA_DIR}/liblzma_MT.lib
+    !static: LIBS += $${LZMA_DIR}/liblzma_MD.lib
 }
 
 HEADERS += $${SRC_DIR}/log.hpp

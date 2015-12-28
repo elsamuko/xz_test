@@ -13,5 +13,7 @@ DESTDIR  = $${MAIN_DIR}/bin/$${COMPILE_MODE}
 include( $${PRI_DIR}/lzma.pri )
 linux: include( $${PRI_DIR}/linux.pri )
 macx:  include( $${PRI_DIR}/mac.pri )
+win32: CONFIG += static
+win32: include( $${PRI_DIR}/win.pri )
 
 SOURCES += $${SRC_DIR}/main_encode.cpp
