@@ -2,6 +2,7 @@
 
 int main() {
     bool success = xz::compress( std::cin, std::cout );
+    fclose( stdout );
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
