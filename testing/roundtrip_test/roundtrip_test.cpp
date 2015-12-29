@@ -37,7 +37,7 @@ void Roundtrip_test::testString() {
     for( size_t i = 0; i < 100; ++i ) {
         std::string original = longString.substr( 0, i );
         std::string compressed;
-        std::string deflated;
+        std::string decompressed;
 
         // compress
         {
@@ -51,13 +51,13 @@ void Roundtrip_test::testString() {
         {
             std::stringstream in( compressed );
             std::stringstream out;
-            xz::deflate( in, out );
-            deflated = out.str();
+            xz::decompress( in, out );
+            decompressed = out.str();
         }
 
         QVERIFY2( !compressed.empty(), std::to_string( i ).c_str() );
-        QVERIFY2( deflated.size() == i, std::to_string( i ).c_str() );
-        QVERIFY2( deflated == original, std::to_string( i ).c_str() );
+        QVERIFY2( decompressed.size() == i, std::to_string( i ).c_str() );
+        QVERIFY2( decompressed == original, std::to_string( i ).c_str() );
     }
 }
 
@@ -89,11 +89,11 @@ void Roundtrip_test::testFile() {
     for( size_t i = 0; i < 100; ++i ) {
         std::string data = longString.substr( 0, i );
         std::string compressed;
-        std::string deflated;
+        std::string decompressed;
 
-        std::string filename_original   = "original.txt";
-        std::string filename_compressed = "compressed.xz";
-        std::string filename_deflated   = "deflated.txt";
+        std::string filename_original       = "original.txt";
+        std::string filename_compressed     = "compressed.xz";
+        std::string filename_decompressed   = "deflated.txt";
 
         utils::toFile( filename_original.c_str(), data );
 
@@ -108,14 +108,14 @@ void Roundtrip_test::testFile() {
         // deflate
         {
             std::ifstream in( filename_compressed.c_str(), std::ifstream::in | std::ifstream::binary );
-            std::ofstream out( filename_deflated.c_str(), std::ofstream::out | std::ofstream::binary );
-            xz::deflate( in, out );
+            std::ofstream out( filename_decompressed.c_str(), std::ofstream::out | std::ofstream::binary );
+            xz::decompress( in, out );
         }
-        deflated = utils::fromFile( filename_deflated );
+        decompressed = utils::fromFile( filename_decompressed );
 
         QVERIFY( !compressed.empty() );
-        QVERIFY( deflated.size() == i );
-        QVERIFY( deflated == data );
+        QVERIFY( decompressed.size() == i );
+        QVERIFY( decompressed == data );
     }
 }
 

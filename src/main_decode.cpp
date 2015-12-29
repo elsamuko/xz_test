@@ -17,7 +17,7 @@ int main() {
     assert( result != -1 );
 #endif // _WIN32
 
-    bool success = xz::deflate( std::cin, std::cout );
+    bool success = xz::decompress( std::cin, std::cout );
     fclose( stdout );
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }

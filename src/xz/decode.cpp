@@ -95,7 +95,7 @@ bool xz::init_decoder( lzma_stream* strm ) {
     return false;
 }
 
-bool xz::deflate( std::istream& istream, std::ostream& ostream ) {
+bool xz::decompress( std::istream& istream, std::ostream& ostream ) {
 
     lzma_helper helper;
     lzma_stream* strm = &helper.stream;
