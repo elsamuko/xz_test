@@ -11,7 +11,7 @@ TARGET_DIR="$MAIN_DIR/libs/$PROJECT"
 PROJECT_DIR="$MAIN_DIR/tmp/$PROJECT"
 DOWNLOAD="$PROJECT_DIR/$PROJECT-$VERSION.tar.xz"
 SRC_DIR="$PROJECT_DIR/src"
-BUILD_DIR="$SRC_DIR/$PROJECT-$VERSION/windows"
+BUILD_DIR="$SRC_DIR/$PROJECT-$VERSION/windows/vs2017"
 BUILD_HELPER="$BUILD_DIR/build.bat"
 
 function indent {
@@ -46,31 +46,28 @@ function doUnzip {
 }
 
 function create_helper {
-	# VS 2015
-	if [ -n "$VS140COMNTOOLS" ]; then
-		echo -ne '@echo off\r\n\r\ncall "%VS140COMNTOOLS%..\\..\\VC\\bin\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
+    # VS2017 has no VS150COMNTOOLS
+    if [ -d 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\' ]; then
+        export VS150COMNTOOLS='C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\'
+    fi
+    if [ -d 'C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\' ]; then
+        export VS150COMNTOOLS='C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\'
+    fi
+
+    # VS 2017
+    if [ -n "$VS150COMNTOOLS" ]; then
+        local ALLCONFIG="/p:platform=x64 /p:PlatformToolset=v141 /p:PreferredToolArchitecture=x64"
+        echo "Building with VS 2017"
+		echo -ne '@echo off\r\n\r\ncall "%VS150COMNTOOLS%..\\..\\VC\\Auxiliary\\Build\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
 		echo -ne '\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v140 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-	# VS 2013
-	elif [ -n "$VS120COMNTOOLS" ]; then
-		echo -ne '@echo off\r\n\r\ncall "%VS120COMNTOOLS%..\\..\\VC\\bin\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
-		echo -ne '\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v120 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-	# VS 2012
-	elif [ -n "$VS110COMNTOOLS" ]; then
-		echo -ne '@echo off\r\n\r\ncall "%VS110COMNTOOLS%..\\..\\VC\\bin\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
-		echo -ne '\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=release /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debug /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=releaseMT /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
-		echo -ne 'msbuild liblzma.vcxproj /p:configuration=debugMT /p:platform=x64 /p:PlatformToolset=v110 /p:PreferredToolArchitecture=x64\r\n' >> "$BUILD_HELPER"
+		echo -ne "msbuild liblzma.vcxproj /p:configuration=debugMT $ALLCONFIG\r\n" >> "$BUILD_HELPER"
+		echo -ne "msbuild liblzma.vcxproj /p:configuration=releaseMT $ALLCONFIG\r\n" >> "$BUILD_HELPER"
+		echo -ne "msbuild liblzma.vcxproj /p:configuration=debug $ALLCONFIG\r\n" >> "$BUILD_HELPER"
+		echo -ne "msbuild liblzma.vcxproj /p:configuration=release $ALLCONFIG\r\n" >> "$BUILD_HELPER"
+	else 
+        echo "This script needs VS2017"
 	fi
+
     chmod +x "$BUILD_HELPER"
 }
 
@@ -93,7 +90,7 @@ function doCopy {
     cp -r "$BUILD_DIR/release/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/release/liblzma_MD.lib"
     cp -r "$BUILD_DIR/debugMT/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/debug/liblzma_MT.lib"
     cp -r "$BUILD_DIR/releaseMT/x64/liblzma/liblzma.lib" "$TARGET_DIR/bin/$OS/release/liblzma_MT.lib"
-    cp -r "$BUILD_DIR/../src/liblzma/api"/* "$TARGET_DIR/include"
+    cp -r "$BUILD_DIR/../../src/liblzma/api"/* "$TARGET_DIR/include"
 }
 
 
