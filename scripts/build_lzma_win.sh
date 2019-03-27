@@ -58,7 +58,7 @@ function create_helper {
     if [ -n "$VS150COMNTOOLS" ]; then
         local ALLCONFIG="/p:platform=x64 /p:PlatformToolset=v141 /p:PreferredToolArchitecture=x64"
         echo "Building with VS 2017"
-		echo -ne '@echo off\r\n\r\ncall "%VS150COMNTOOLS%..\\..\\VC\\Auxiliary\\Build\\vcvars32.bat"\r\n' > "$BUILD_HELPER"
+		echo -ne '@echo off\r\n\r\ncall "%VS150COMNTOOLS%..\\..\\VC\\Auxiliary\\Build\\vcvars64.bat"\r\n' > "$BUILD_HELPER"
 		echo -ne '\r\n' >> "$BUILD_HELPER"
 		echo -ne "msbuild liblzma.vcxproj /p:configuration=debugMT $ALLCONFIG\r\n" >> "$BUILD_HELPER"
 		echo -ne "msbuild liblzma.vcxproj /p:configuration=releaseMT $ALLCONFIG\r\n" >> "$BUILD_HELPER"
