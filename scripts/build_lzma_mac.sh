@@ -2,8 +2,8 @@
 
 OS=mac
 PROJECT=lzma
-VERSION="5.2.2"
-DL_URL="http://tukaani.org/xz/xz-$VERSION.tar.xz"
+VERSION="5.2.4"
+DL_URL="https://tukaani.org/xz/xz-$VERSION.tar.xz"
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MAIN_DIR="$SCRIPT_DIR/.."
@@ -35,7 +35,7 @@ function doPrepare {
 
 function doDownload {
     if [ ! -f "$DOWNLOAD" ]; then
-        curl "$DL_URL" -o "$DOWNLOAD"
+        curl -Ls "$DL_URL" -o "$DOWNLOAD"
     fi
 }
 
