@@ -2,7 +2,7 @@
 
 OS=linux
 PROJECT=lzma
-VERSION="5.2.4"
+VERSION="5.2.5"
 DL_URL="https://tukaani.org/xz/xz-$VERSION.tar.xz"
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
